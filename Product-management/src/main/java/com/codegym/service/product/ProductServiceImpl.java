@@ -72,8 +72,8 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductDTO> findProductByCategoryName(Category category) {
-        return productRepository.findProductByCategoryName(category);
+    public Page<ProductDTO> findProductByCategoryName(Category category, Pageable pageable) {
+        return productRepository.findProductByCategoryName(category, pageable);
     }
 
     @Override

@@ -4,6 +4,9 @@
 
   <div class="modal fade" id="modalUpdateProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Update Product</h5>
@@ -11,9 +14,6 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-<!--        <div class="loader hide">-->
-<!--          <div id="loading"></div>-->
-<!--        </div>-->
         <div class="modal-body">
           <form id="frmUpdateProduct">
             <div class="row">
@@ -26,7 +26,9 @@
                            class="form-control"
                            placeholder="Nhập tên sản phẩm.">
                   </div>
-
+                  <div class="loaderModal hide">
+                    <div id="loadingModal"></div>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="form-group col-lg-6">
@@ -64,7 +66,7 @@
                     <textarea id="descriptionUp" name="descriptionUp"
                               class="form-control"
                               rows="6"
-                              placeholder="Nhập tên sản phẩm."></textarea>
+                              placeholder="Nhập miêu tả sản phẩm."></textarea>
                   </div>
                 </div>
               </div>
@@ -100,8 +102,12 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="btnUpdate" type="button" class="btn btn-info">
-            <i class="fa fa-exchange"></i> Update
+          <button id="btnUpdate" type="button" class="btn btn-info" >
+            <div class="loading-button hide">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span class="sr-only">Loading...</span>
+            </div>
+             Update
           </button>
         </div>
       </div>

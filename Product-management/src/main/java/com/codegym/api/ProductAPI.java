@@ -56,14 +56,14 @@ public class ProductAPI {
 //    }
 
 
-    @GetMapping
-    public ResponseEntity<?> getAllProductPage(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
-//        Page<Product> products = productService.findAllProduct(pageable);
-
-        Page<ProductDTO> products = productService.findAllByDeletedIsFalse(pageable);
-
-        return new ResponseEntity<>(products, HttpStatus.OK);
-    }
+//    @GetMapping
+//    public ResponseEntity<?> getAllProductPage(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
+////        Page<Product> products = productService.findAllProduct(pageable);
+//
+//        Page<ProductDTO> products = productService.findAllByDeletedIsFalse(pageable);
+//
+//        return new ResponseEntity<>(products, HttpStatus.OK);
+//    }
 
 
 
@@ -77,23 +77,23 @@ public class ProductAPI {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<ProductDTO>> getAllProductByFilter(@RequestParam Long categoryId){
+    public ResponseEntity<?> getAllProductByFilter(@RequestParam Long categoryId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
         if(categoryId == -1){
-            List<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse();
-            if (productDTOS.size() == 0) {
+            Page<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse(pageable);
+            if (productDTOS.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(productDTOS, HttpStatus.OK);
         }
         Category category = categoryService.findById(categoryId).get();
-        List<ProductDTO> productDTOS = productService.findProductByCategoryName(category);
-        if(productDTOS.size() == 0){
+        Page<ProductDTO> productDTOS = productService.findProductByCategoryName(category , pageable);
+        if(productDTOS.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(productDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/search")
+    @GetMapping()
     public ResponseEntity<?> getAllProductBySearch(@RequestParam String keySearch, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
         keySearch = "%" + keySearch + "%";
         Page<ProductDTO> productDTOS = productService.findProductByNameProductOrDescriptionAndDeletedIsFalse(keySearch, pageable);

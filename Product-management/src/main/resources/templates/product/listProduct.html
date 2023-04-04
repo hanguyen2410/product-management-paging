@@ -226,18 +226,7 @@
 
                     </select>
                 </div>
-<!--                <div>-->
-<!--                    <button class="btn btn-outline-secondary">Date <i class="fa fa-ban"-->
-<!--                                                                      aria-hidden="true"></i></button>-->
-<!--                </div>-->
-<!--                <div>-->
-<!--                    <button class="btn btn-outline-secondary">Status <i class="fa fa-ban"-->
-<!--                                                                        aria-hidden="true"></i></button>-->
-<!--                </div>-->
-<!--                <div>-->
-<!--                    <button class="btn btn-outline-secondary">Orgnanization <i class="fa fa-ban"-->
-<!--                                                                               aria-hidden="true"></i></button>-->
-<!--                </div>-->
+
             </div>
             <div class="iq-card-body">
                 <div class="table-responsive">
@@ -385,7 +374,7 @@
     page.dialogs.elements.btnClearImagePreviewUp = $(".clear-image-previewUp i");
     page.dialogs.alertDanger.frmUpdateProduct = $("#frmUpdateProduct .frm-alert-danger");
 
-    page.elements.loader = $(".loader");
+    page.elements.loader = $(".loaderModal");
 
     page.dialogs.elements.filter = $("#filter");
 
@@ -541,11 +530,12 @@
             url: page.urls.getProductByFilter
         })
             .done((data) => {
-                $.each(data, (i, item) => {
+                let products = data.content;
+                $.each(products, (i, item) => {
                     product = item;
                     productAvatar = product.productAvatar;
                     category = product.category;
-                    page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
+                    page.elements.tbTbody.append(page.commands.renderProduct(product, productAvatar, category));
                 });
 
                 page.commands.handleRenderCount();
@@ -977,48 +967,60 @@
 
     page.dialogs.elements.frmUpdateProduct.validate({
         rules: {
-            nameProduct: {
+            nameProductUp: {
                 required: true,
                 minlength: 5,
                 maxlength: 50
             },
-            price: {
+            priceUp: {
                 required: true,
                 min: 100000,
                 max: 999999999,
                 number: true
             },
-            quantity: {
+            quantityUp: {
                 required: true,
                 min: 1,
                 max: 999999,
                 number: true
             },
-            description: {
+            categoryUp: {
+                required: true,
+                min: 1,
+                max: 5,
+                number: true
+            },
+            descriptionUp: {
                 required: true,
                 minlength: 5,
                 maxlength: 200
             }
         },
         messages: {
-            nameProduct: {
+            nameProductUp: {
                 required: "Vui lòng nhập tên sản phẩm.",
                 minlength: "Tên sản phẩm có độ dài tối thiểu là 5 ký tự.",
                 maxlength: "Tên sản phẩm có độ dài tối đa là 100 ký tự."
             },
-            price: {
+            priceUp: {
                 required: "Vui lòng nhập giá.",
                 min: "Giá sản phẩm tối thiểu là 100.000 VNĐ.",
                 max: "Giá sản phẩm tối đa là 999.999.999 VNĐ.",
                 number: "Giá sản phẩm phải là số."
             },
-            quantity: {
+            quantityUp: {
                 required: "Vui lòng nhập số lượng.",
                 min: "Số lượng tối thiểu là 1 sản phẩm.",
                 max: "Số lượng tối thiểu là 999.999 sản phẩm.",
                 number: "Số lượng phải là số."
             },
-            description: {
+            categoryUp: {
+                required: "Vui lòng nhập loại sản phâ.",
+                min: "mã sản phẩm không đúng. vui lòng nhập lại.",
+                max: "mã sản phẩm không đúng. vui lòng nhập lại.",
+                number: "mã sản phẩm không đúng. vui lòng nhập lại."
+            },
+            descriptionUp: {
                 required: "Vui lòng nhập mô tả.",
                 minlength: "Mô tả có độ dài tối thiểu là 5 ký tự.",
                 maxlength: "Mô tả có độ dài tối đa là 200 ký tự."
@@ -1075,15 +1077,20 @@
                 updateRow.replaceWith(str);
                 page.commands.count();
                 totalFood = +(countFruit + countVegetable + countMeat + countJuice + countSeafood);
+
                 page.commands.handleRenderCount();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
                 page.dialogs.elements.modalUpdateProduct.modal("hide");
                 AppBase.IziToast.showSuccessAlertLeft("Chỉnh sửa sản phẩm <b>'" + product.nameProduct + "'</b> thành công.")
+                page.commands.closeLoading();
             }).fail((jqXHR) => {
             let str = ``;
             console.log(jqXHR.status);
+            if(jqXHR.status === 400){
+                AppBase.SweerAlert.showError400();
+            }
             if (jqXHR.status === 401) {
                 AppBase.SweetAlert.showError401();
             } else {
@@ -1159,12 +1166,14 @@
     // ------End Update------
 
     page.commands.closeLoading = () => {
+        $('.loading-button').addClass('hide');
         page.elements.loader.addClass("hide");
         page.dialogs.elements.btnCreate.prop('disabled', false);
         page.dialogs.elements.btnUpdate.prop('disabled', false);
     }
 
     page.commands.showLoading = () => {
+        $('.loading-button').removeClass('hide');
         page.elements.loader.removeClass("hide");
         page.dialogs.elements.btnCreate.prop('disabled', true);
         page.dialogs.elements.btnUpdate.prop('disabled', true);
@@ -1312,8 +1321,10 @@
                 url: page.urls.getProductByFilter + '?categoryId=' + categoryId,
             })
                 .done((data) => {
+
                     page.elements.tbTbody.empty();
-                    $.each(data, (i, item) => {
+                    let products = data.content;
+                    $.each(products, (i, item) => {
                         product = item;
                         productAvatar = product.productAvatar;
                         category = product.category;
@@ -1342,6 +1353,11 @@
             // page.commands.doSearch();
         })
     }
+
+    // page.commands.renderLoadingBtn = () => {
+    //     return `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    //         <span class="sr-only">Loading...</span>`
+    // }
 
     // -----------Search-----------
     // page.commands.doSearch = () => {
@@ -1511,6 +1527,7 @@
 
 
     page.commands.loadData = () => {
+        page.commands.closeLoading();
         // page.loadData.getAllProduct();
         page.loadData.getAllProductByPaginationAndSearch(page.dialogs.elements.search.val());
         page.commands.handleShowCreateModal();

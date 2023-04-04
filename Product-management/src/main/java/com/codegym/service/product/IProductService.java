@@ -29,9 +29,10 @@ public interface IProductService extends IGeneralService<Product> {
     Product saveWithAvatar(Product product, MultipartFile file);
 
     void softDelete(Long productId);
+
     List<ProductDTO> findProductByCategory(@Param("categoryId") Long categoryId);
 
-    List<ProductDTO> findProductByCategoryName(@Param("category") Category category);
+    Page<ProductDTO> findProductByCategoryName(Category category, Pageable pageable);
 
     List<ProductDTO> findProductByNameProduct(@Param("keySearch")String keySearch);
 }

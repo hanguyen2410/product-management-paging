@@ -1,7 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <th:block th:fragment="modalCreateProduct">
    <!-- Modal -->
-
    <div class="modal fade" id="modalCreateProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-xl modal-dialog-centered">
          <div class="modal-content">
@@ -11,9 +10,8 @@
                   <span aria-hidden="true">&times;</span>
                </button>
             </div>
-            <div class="loader hide">
-               <div id="loading"></div>
-            </div>
+<!--            <div class="spinner-border text-success"></div>-->
+
             <div class="modal-body">
                <form id="frmCreateProduct">
                   <div class="row">
@@ -26,7 +24,9 @@
                                      class="form-control"
                                      placeholder="Nhập tên sản phẩm.">
                            </div>
-
+                        </div>
+                        <div class="loaderModal hide">
+                           <div id="loadingModal"></div>
                         </div>
                         <div class="row">
                            <div class="form-group col-lg-6">
@@ -63,13 +63,14 @@
 
                            </div>
                         </div>
+
                         <div class="row">
                            <div class="form-group col-lg-12">
                               <label for="descriptionCre" class="col-form-label">Description</label>
                               <textarea id="descriptionCre" name="descriptionCre"
                                         class="form-control"
                                         rows="6"
-                                        placeholder="Nhập tên sản phẩm."></textarea>
+                                        placeholder="Nhập miêu tả sản phẩm."></textarea>
                            </div>
                         </div>
                      </div>
@@ -105,7 +106,12 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button id="btnCreate" type="button" class="btn btn-info">
+               <button id="btnCreate" type="button" class="btn btn-info" >
+                  <div class="loading-button hide">
+                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                     <span class="sr-only">Loading...</span>
+                  </div>
+
                   <i class="ion ion-md-checkmark"></i> Create
                </button>
             </div>

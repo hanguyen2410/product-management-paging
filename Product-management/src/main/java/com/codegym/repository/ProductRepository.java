@@ -27,8 +27,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                 "pro.category," +
                 "pro.productAvatar" +
             ") " +
-            "FROM Product AS pro " +
-            "WHERE pro.deleted = false "
+            "FROM Product AS pro "
     )
     List<ProductDTO> findAllProductDTOByDeletedIsFalse();
 
@@ -43,8 +42,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             ") " +
             "FROM Product AS pro " +
             "WHERE pro.nameProduct like :keySearch " +
-            "OR pro.description like :keySearch " +
-            "And pro.deleted = false "
+            "OR pro.description like :keySearch "
     )
     Page<ProductDTO> findProductByNameProductOrDescriptionAndDeletedIsFalse(String keySearch, Pageable pageable);
 
@@ -72,8 +70,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                 "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
-            "WHERE pro.category = :categoryId " +
-            "AND pro.deleted = false"
+            "WHERE pro.category = :categoryId "
     )
     List<ProductDTO> findProductByCategory(@Param("categoryId") Long categoryId);
 
@@ -88,10 +85,9 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                 "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
-            "WHERE pro.category = :category " +
-            "AND pro.deleted = false"
+            "WHERE pro.category = :category "
     )
-    List<ProductDTO> findProductByCategoryName(@Param("category") Category category);
+    Page<ProductDTO> findProductByCategoryName(Category category , Pageable pageable);
 
 
     @Query("SELECT NEW com.codegym.model.dto.productDTO.ProductDTO (" +
@@ -104,8 +100,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                 "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
-            "WHERE pro.nameProduct like :keySearch " +
-            "AND pro.deleted = false "
+            "WHERE pro.nameProduct like :keySearch "
     )
     List<ProductDTO> findProductByNameProduct(@Param("keySearch")String keySearch);
 

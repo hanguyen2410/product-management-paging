@@ -1,0 +1,110 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="modalUpdateProduct">
+  <!-- Modal -->
+
+  <div class="modal fade" id="modalUpdateProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Update Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+<!--        <div class="loader hide">-->
+<!--          <div id="loading"></div>-->
+<!--        </div>-->
+        <div class="modal-body">
+          <form id="frmUpdateProduct">
+            <div class="row">
+              <div class="col-md-7">
+                <div class="row">
+                  <div class="form-group col-lg-12">
+                    <label for="nameProductUp" class="col-form-label">Product Name</label>
+                    <input id="nameProductUp" name="nameProductUp"
+                           type="text"
+                           class="form-control"
+                           placeholder="Nhập tên sản phẩm.">
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="form-group col-lg-6">
+                    <label for="priceUp" class="col-form-label">Price</label>
+                    <input id="priceUp" name="priceUp"
+                           type="number"
+                           min="100000"
+                           max="999999999"
+                           class="form-control"
+                           placeholder="Nhập giá.">
+
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="quantityUp" class="col-form-label">Quantity</label>
+                    <input id="quantityUp" name="quantityUp"
+                           type="number"
+                           min="1"
+                           max="999999"
+                           class="form-control"
+                           placeholder="Nhập số lượng.">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="categoryUp" class="col-form-label">Category</label>
+
+                    <select id="categoryUp" name="categoryUp"
+                            class="form-control"
+                    >
+                    </select>
+
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-lg-12">
+                    <label for="descriptionUp" class="col-form-label">Description</label>
+                    <textarea id="descriptionUp" name="descriptionUp"
+                              class="form-control"
+                              rows="6"
+                              placeholder="Nhập tên sản phẩm."></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <section>
+                  <div class="wrapper-imagesUp">
+                    <div class="image-previewUp">
+                      <canvas id="canvasUp"></canvas>
+                    </div>
+                    <div class="contentUp" style="opacity: 1;">
+                      <div class="iconUp">
+                        <i class="ion ion-md-cloud-upload"></i>
+                      </div>
+                      <div class="textUp">
+                        Chưa có tệp nào được chọn!
+                      </div>
+                      <div class="textUp">
+                        Dung lượng tối đa = 2MB
+                      </div>
+                    </div>
+                    <div class="clear-image-previewUp">
+                      <i class="fas fa-times"></i>
+                    </div>
+                    <div class="file-nameUp">
+                      Sửa ảnh
+                    </div>
+                  </div>
+                  <input type="file" id="imageFileUp" accept="image/jpeg, image/png" hidden="">
+                </section>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="btnUpdate" type="button" class="btn btn-info">
+            <i class="fa fa-exchange"></i> Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</th:block>

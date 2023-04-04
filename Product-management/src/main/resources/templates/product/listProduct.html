@@ -394,48 +394,31 @@
     page.dialogs.elements.countSeaFood = $('#countSeaFood')
     page.dialogs.elements.countTotalFood = $('#countTotalFood')
 
-    // page.loadData.getAllProduct = () => {
-    //
-    //     $.ajax({
-    //         headers: {
-    //             "accept": "application/json",
-    //             "content-type": "application/json"
-    //         },
-    //         type: "GET",
-    //         url: page.urls.getAllProductsPage
-    //     })
-    //         .done((data) => {
-    //
-    //             let products = data.content;
-    //             $.each(products, (i, item) => {
-    //                 product = item;
-    //                 productAvatar = product.productAvatar;
-    //                 category = product.category;
-    //                 // page.commands.count();
-    //                 page.elements.tbTbody.append(page.commands.renderProduct(product, productAvatar, category));
-    //             });
-    //             // totalFood = +(countFruit + countVegetable + countMeat + countJuice + countSeafood);
-    //
-    //             let pageable = data.pageable;
-    //             let totalPages = data.totalPages;
-    //             let str = page.commands.renderPagination(pageable, totalPages);
-    //             $('ul.pagination').empty().append(str);
-    //
-    //             setTimeout(() => {
-    //                 page.commands.handleAddEventPageLink();
-    //             }, 1000)
-    //
-    //             // page.commands.handleAddEventPageLinkAndSearch();
-    //             page.commands.handleAddEventSearch();
-    //             page.commands.handleRenderCount();
-    //             page.commands.removeHandleShowModal();
-    //             page.commands.handleShowGroupModal();
-    //             page.commands.handleSearchAndFilter();
-    //         })
-    //         .fail((error) => {
-    //             console.log(error);
-    //         })
-    // }
+    page.loadData.countProduct = () => {
+
+        $.ajax({
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json"
+            },
+            type: "GET",
+            url: page.urls.getAllProductsPage + "/total"
+        })
+            .done((data) => {
+
+
+                $.each(data, (i, item) => {
+                    product = item;
+                    category = product.category;
+                    page.commands.count();
+                });
+                totalFood = +(countFruit + countVegetable + countMeat + countJuice + countSeafood);
+                page.commands.handleRenderCount();
+            })
+            .fail((error) => {
+                console.log(error);
+            })
+    }
 
     page.loadData.getAllProductByPaginationAndSearch = (keySearch) => {
 
@@ -460,18 +443,13 @@
                     product = item;
                     productAvatar = product.productAvatar;
                     category = product.category;
-                    page.commands.count();
+
                     page.elements.tbTbody.append(page.commands.renderProduct(product, productAvatar, category));
                 });
 
-                totalFood = +(countFruit + countVegetable + countMeat + countJuice + countSeafood);
-
                 page.commands.handleAddEventPageLink();
-                // page.commands.handleAddEventPageLinkAndSearch();
-                page.commands.handleRenderCount();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
-                // page.commands.handleSearchAndFilter();
             })
             .fail((error) => {
                 console.log(error);
@@ -527,10 +505,17 @@
                 "content-type": "application/json"
             },
             type: "GET",
-            url: page.urls.getProductByFilter
+            url: page.urls.getProductByFilter + '?page=' + currentPageNumber
         })
             .done((data) => {
+                page.elements.tbTbody.empty();
                 let products = data.content;
+                let pageable = data.pageable;
+                let totalPages = data.totalPages;
+                let str = page.commands.renderPagination(pageable, totalPages);
+
+                $('ul.pagination').empty().append(str);
+
                 $.each(products, (i, item) => {
                     product = item;
                     productAvatar = product.productAvatar;
@@ -538,7 +523,6 @@
                     page.elements.tbTbody.append(page.commands.renderProduct(product, productAvatar, category));
                 });
 
-                page.commands.handleRenderCount();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
@@ -677,12 +661,12 @@
 
         // $('#countFruit').prepend(page.commands.renderCountProduct(countFruit));
 
-        page.dialogs.elements.countFruit.prepend(page.commands.renderCountProduct(countFruit));
-        page.dialogs.elements.countVegetable.prepend(page.commands.renderCountProduct(countVegetable));
-        page.dialogs.elements.countMeat.prepend(page.commands.renderCountProduct(countMeat));
-        page.dialogs.elements.countJuice.prepend(page.commands.renderCountProduct(countJuice));
-        page.dialogs.elements.countSeaFood.prepend(page.commands.renderCountProduct(countSeafood));
-        page.dialogs.elements.countTotalFood.prepend(page.commands.renderCountProduct(totalFood));
+        page.dialogs.elements.countFruit.append(page.commands.renderCountProduct(countFruit));
+        page.dialogs.elements.countVegetable.append(page.commands.renderCountProduct(countVegetable));
+        page.dialogs.elements.countMeat.append(page.commands.renderCountProduct(countMeat));
+        page.dialogs.elements.countJuice.append(page.commands.renderCountProduct(countJuice));
+        page.dialogs.elements.countSeaFood.append(page.commands.renderCountProduct(countSeafood));
+        page.dialogs.elements.countTotalFood.append(page.commands.renderCountProduct(totalFood));
     }
 
     page.commands.renderProduct = (product, productAvatar, category) => {
@@ -850,10 +834,7 @@
                     page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
                 }
 
-
-
-
-                page.commands.handleRenderCount();
+                page.loadData.countProduct();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
@@ -1077,8 +1058,7 @@
                 updateRow.replaceWith(str);
                 page.commands.count();
                 totalFood = +(countFruit + countVegetable + countMeat + countJuice + countSeafood);
-
-                page.commands.handleRenderCount();
+                page.loadData.countProduct();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
@@ -1257,7 +1237,8 @@
         })
             .done(() => {
                 $("#tr_" + productId).remove();
-                page.commands.handleRenderCount();
+
+                page.loadData.countProduct();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
@@ -1318,12 +1299,16 @@
             let categoryId = +page.dialogs.elements.filter.val();
             $.ajax({
                 type: "GET",
-                url: page.urls.getProductByFilter + '?categoryId=' + categoryId,
+                url: page.urls.getProductByFilter + '?categoryId=' + categoryId + '&page=' + currentPageNumber
             })
                 .done((data) => {
 
                     page.elements.tbTbody.empty();
                     let products = data.content;
+                    let pageable = data.pageable;
+                    let totalPages = data.totalPages;
+                    let str = page.commands.renderPagination(pageable, totalPages);
+                    $('ul.pagination').empty().append(str);
                     $.each(products, (i, item) => {
                         product = item;
                         productAvatar = product.productAvatar;
@@ -1331,7 +1316,6 @@
                         page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
                     });
 
-                    page.commands.handleRenderCount();
                     page.commands.removeHandleShowModal();
                     page.commands.handleShowGroupModal();
                     page.commands.handleSearchAndFilter();
@@ -1528,7 +1512,7 @@
 
     page.commands.loadData = () => {
         page.commands.closeLoading();
-        // page.loadData.getAllProduct();
+        page.loadData.countProduct();
         page.loadData.getAllProductByPaginationAndSearch(page.dialogs.elements.search.val());
         page.commands.handleShowCreateModal();
         page.commands.getAllCategoryFilter();

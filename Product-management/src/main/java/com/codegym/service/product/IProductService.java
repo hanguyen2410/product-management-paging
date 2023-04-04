@@ -16,7 +16,6 @@ import java.util.List;
 public interface IProductService extends IGeneralService<Product> {
     List<ProductDTO> findAllByDeletedIsFalse();
 
-    Page<Product> findAllProduct(Pageable pageable);
 
     Page<ProductDTO> findProductByNameProductOrDescriptionAndDeletedIsFalse(String keySearch, Pageable pageable);
 
@@ -34,5 +33,4 @@ public interface IProductService extends IGeneralService<Product> {
 
     Page<ProductDTO> findProductByCategoryName(Category category, Pageable pageable);
 
-    List<ProductDTO> findProductByNameProduct(@Param("keySearch")String keySearch);
 }

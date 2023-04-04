@@ -28,7 +28,7 @@ class AppBase {
         static showDeactivateConfirmDialog() {
             return Swal.fire({
                 icon: 'warning',
-                text: 'Are you sure to deactivate the selected customer ?',
+                text: 'Are you sure to deactivate the selected Product ?',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',

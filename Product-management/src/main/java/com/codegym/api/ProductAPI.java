@@ -45,15 +45,15 @@ public class ProductAPI {
 
 
 
-//    @GetMapping
-//    public ResponseEntity<List<ProductDTO>> getAllProduct(){
-//        List<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse();
-//
-//        if (productDTOS.size() == 0) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
-//        return new ResponseEntity<>(productDTOS, HttpStatus.OK);
-//    }
+    @GetMapping("/total")
+    public ResponseEntity<List<ProductDTO>> getAllProduct(){
+        List<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse();
+
+        if (productDTOS.size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(productDTOS, HttpStatus.OK);
+    }
 
 
 //    @GetMapping

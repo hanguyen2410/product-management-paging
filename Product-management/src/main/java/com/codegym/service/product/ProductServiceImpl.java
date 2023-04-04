@@ -48,10 +48,6 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAllProductDTOByDeletedIsFalse();
     }
 
-    @Override
-    public Page<Product> findAllProduct(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
 
     @Override
     public Page<ProductDTO> findProductByNameProductOrDescriptionAndDeletedIsFalse(String keySearch, Pageable pageable) {
@@ -76,10 +72,6 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findProductByCategoryName(category, pageable);
     }
 
-    @Override
-    public List<ProductDTO> findProductByNameProduct(String keySearch) {
-        return productRepository.findProductByNameProduct(keySearch);
-    }
 
     @Override
     public boolean existsByNameProduct(String nameProduct) {

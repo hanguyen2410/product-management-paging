@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
+
 
 public interface IProductService extends IGeneralService<Product> {
     List<ProductDTO> findAllByDeletedIsFalse();
@@ -24,7 +24,9 @@ public interface IProductService extends IGeneralService<Product> {
     boolean existsByNameProduct(String nameProduct);
 
     Product createWithAvatar(ProductCreateDTO productCreateDTO, Category category);
+
     Boolean existsByNameProductAndIdNot(String productName, Long id);
+
     Product saveWithAvatar(Product product, MultipartFile file);
 
     void softDelete(Long productId);
@@ -33,4 +35,6 @@ public interface IProductService extends IGeneralService<Product> {
 
     Page<ProductDTO> findProductByCategoryName(Category category, Pageable pageable);
 
+    //    Page<ProductDTO> findProductOrderByNameProductOrPriceOrQuantity(Pageable pageable);
+    Page<ProductDTO> findAll(String keyword, Long categoryId, Pageable pageable);
 }

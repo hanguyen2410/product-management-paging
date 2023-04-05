@@ -230,14 +230,14 @@
             </div>
             <div class="iq-card-body">
                 <div class="table-responsive">
-                    <table class="table mb-0" id="listProduct">
+                    <table class="table mb-0 dataTable" id="listProduct">
                         <thead class="thead-light">
                         <tr class="bg-info text-white">
-                            <th class="text-center">ID</th>
+                            <th class="text-center sorting_asc" id="sortId">ID</th>
                             <th class="text-center">IMAGE</th>
-                            <th class="text-center">Product Name</th>
-                            <th class="text-center">Price (1kg)</th>
-                            <th class="text-center">Quantity (kg)</th>
+                            <th class="text-center sorting_asc" id="sortProductName">Product Name <i class="fa fa-sort-alpha-asc" style="font-size: 15px" aria-hidden="false"></i></th>
+                            <th class="text-center sorting_asc" id="sortPrice">Price (1Kg)</th>
+                            <th class="text-center sorting_asc" id="sortQuantity">Quantity (Kg)<i class="fa fa-sort-alpha-asc" style="font-size: 15px" aria-hidden="false"></i></th>
                             <th class="text-center">Category</th>
                             <th class="text-center">Description</th>
                             <th class="text-center">Thao Tác</th>
@@ -331,6 +331,7 @@
     let countSeafood = 0;
     let totalFood = 0;
     let currentPageNumber = 0;
+    let totalPages = 0;
 
     page.elements.tbTbody = $('#listProduct tbody')
     page.dialogs.elements.nameProductCre = $("#nameProductCre");
@@ -432,12 +433,13 @@
         })
             .done((data) => {
                 page.elements.tbTbody.empty();
+                $('ul.pagination').empty()
                 let products = data.content;
 
                 let pageable = data.pageable;
-                let totalPages = data.totalPages;
+                totalPages = data.totalPages;
                 let str = page.commands.renderPagination(pageable, totalPages);
-                $('ul.pagination').empty().append(str);
+                $('ul.pagination').append(str);
 
                 $.each(products, (i, item) => {
                     product = item;
@@ -511,7 +513,7 @@
                 page.elements.tbTbody.empty();
                 let products = data.content;
                 let pageable = data.pageable;
-                let totalPages = data.totalPages;
+                totalPages = data.totalPages;
                 let str = page.commands.renderPagination(pageable, totalPages);
 
                 $('ul.pagination').empty().append(str);
@@ -523,6 +525,7 @@
                     page.elements.tbTbody.append(page.commands.renderProduct(product, productAvatar, category));
                 });
 
+                page.commands.handleAddEventPageLinkFilter();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
@@ -531,6 +534,8 @@
                 console.log(error);
             })
     }
+
+
 
 
     page.commands.handleShowCreateModal = () => {
@@ -830,8 +835,10 @@
                 })
 
                 if (currentPageNumber === 0) {
-                    $('#listProduct tbody tr:eq(4)').remove();
-                    page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
+                    // $('#listProduct tbody tr:eq(4)').remove();
+                    // page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
+                    let keySearch = page.dialogs.elements.search.val();
+                    page.loadData.getAllProductByPaginationAndSearch(keySearch);
                 }
 
                 page.loadData.countProduct();
@@ -1236,12 +1243,28 @@
             data: JSON.stringify(productId)
         })
             .done(() => {
-                $("#tr_" + productId).remove();
+
 
                 page.loadData.countProduct();
                 page.commands.removeHandleShowModal();
                 page.commands.handleShowGroupModal();
                 page.commands.handleSearchAndFilter();
+
+                let keySearch = page.dialogs.elements.search.val();
+                let rows = $('#listProduct tbody tr').length;
+
+                if (rows === 1) {
+                    currentPageNumber = 0;
+                    page.loadData.getAllProductByPaginationAndSearch(keySearch);
+                }
+                else {
+                    if ((currentPageNumber + 1) === totalPages) {
+                        $("#tr_" + productId).remove();
+                    }
+                    else {
+                        page.loadData.getAllProductByPaginationAndSearch(keySearch);
+                    }
+                }
                 AppBase.IziToast.showSuccessAlertLeft("Xóa Sản Phẩm <b>'" + product.nameProduct + "'</b> thành công");
             })
             .fail((jqXHR) => {
@@ -1294,37 +1317,38 @@
             })
     }
 
-    page.commands.doFilter = () =>{
-        page.dialogs.elements.filter.on("change", function () {
-            let categoryId = +page.dialogs.elements.filter.val();
-            $.ajax({
-                type: "GET",
-                url: page.urls.getProductByFilter + '?categoryId=' + categoryId + '&page=' + currentPageNumber
-            })
-                .done((data) => {
-
-                    page.elements.tbTbody.empty();
-                    let products = data.content;
-                    let pageable = data.pageable;
-                    let totalPages = data.totalPages;
-                    let str = page.commands.renderPagination(pageable, totalPages);
-                    $('ul.pagination').empty().append(str);
-                    $.each(products, (i, item) => {
-                        product = item;
-                        productAvatar = product.productAvatar;
-                        category = product.category;
-                        page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
-                    });
-
-                    page.commands.removeHandleShowModal();
-                    page.commands.handleShowGroupModal();
-                    page.commands.handleSearchAndFilter();
-                })
-                .fail((error) => {
-                    console.log(error);
-                })
+    page.commands.doFilter = () => {
+        let categoryId = +page.dialogs.elements.filter.val();
+        $.ajax({
+            type: "GET",
+            url: page.urls.getProductByFilter + '?categoryId=' + categoryId + '&page=' + currentPageNumber
         })
-}
+            .done((data) => {
+
+                page.elements.tbTbody.empty();
+                let products = data.content;
+                let pageable = data.pageable;
+                let totalPages = data.totalPages;
+                let str = page.commands.renderPagination(pageable, totalPages);
+                $('ul.pagination').empty().append(str);
+
+                page.commands.handleAddEventPageLinkFilter();
+
+                $.each(products, (i, item) => {
+                    product = item;
+                    productAvatar = product.productAvatar;
+                    category = product.category;
+                    page.elements.tbTbody.prepend(page.commands.renderProduct(product, productAvatar, category));
+                });
+
+                page.commands.removeHandleShowModal();
+                page.commands.handleShowGroupModal();
+                page.commands.handleSearchAndFilter();
+            })
+            .fail((error) => {
+                console.log(error);
+            })
+    }
 
 
     //     ----------------End Filter-------------
@@ -1383,7 +1407,9 @@
 
     // -------------handle------------
     page.commands.handleSearchAndFilter = () => {
-        page.commands.doFilter();
+        page.dialogs.elements.filter.on("change", function () {
+            page.commands.doFilter();
+        })
     }
 
     page.commands.handleShowGroupModal = () => {
@@ -1447,11 +1473,19 @@
     page.commands.handleAddEventPageLink = () => {
         $('.page-link').on('click', function () {
             let pageNumber = $(this).data('page');
-            console.log('pageNumber = ' + pageNumber)
             currentPageNumber = pageNumber;
             let keySearch = page.dialogs.elements.search.val();
             page.loadData.getAllProductByPaginationAndSearch(keySearch);
             // page.commands.doSearch();
+        })
+    }
+
+    page.commands.handleAddEventPageLinkFilter = () => {
+        $('.page-link').on('click', function () {
+            let pageNumber = $(this).data('page');
+            console.log('pageNumber = ' + pageNumber)
+            currentPageNumber = pageNumber;
+            page.commands.doFilter();
         })
     }
 

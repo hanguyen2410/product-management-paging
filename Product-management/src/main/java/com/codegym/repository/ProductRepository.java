@@ -6,26 +6,28 @@ import com.codegym.model.dto.productDTO.ProductDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product,Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     @Query("SELECT NEW com.codegym.model.dto.productDTO.ProductDTO (" +
-                "pro.id, " +
-                "pro.nameProduct, " +
-                "pro.price, " +
-                "pro.quantity, " +
-                "pro.description," +
-                "pro.category," +
-                "pro.productAvatar" +
+            "pro.id, " +
+            "pro.nameProduct, " +
+            "pro.price, " +
+            "pro.quantity, " +
+            "pro.description," +
+            "pro.category," +
+            "pro.productAvatar" +
             ") " +
             "FROM Product AS pro "
     )
@@ -61,13 +63,13 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
 
     @Query("SELECT NEW com.codegym.model.dto.productDTO.ProductDTO (" +
-                "pro.id, " +
-                "pro.nameProduct, " +
-                "pro.price, " +
-                "pro.quantity, " +
-                "pro.description," +
-                "pro.category," +
-                "pro.productAvatar" +
+            "pro.id, " +
+            "pro.nameProduct, " +
+            "pro.price, " +
+            "pro.quantity, " +
+            "pro.description," +
+            "pro.category," +
+            "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
             "WHERE pro.category = :categoryId "
@@ -76,32 +78,54 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
 
     @Query("SELECT NEW com.codegym.model.dto.productDTO.ProductDTO (" +
-                "pro.id, " +
-                "pro.nameProduct, " +
-                "pro.price, " +
-                "pro.quantity, " +
-                "pro.description," +
-                "pro.category," +
-                "pro.productAvatar" +
+            "pro.id, " +
+            "pro.nameProduct, " +
+            "pro.price, " +
+            "pro.quantity, " +
+            "pro.description," +
+            "pro.category," +
+            "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
             "WHERE pro.category = :category "
     )
-    Page<ProductDTO> findProductByCategoryName(Category category , Pageable pageable);
+    Page<ProductDTO> findProductByCategoryName(Category category, Pageable pageable);
 
 
     @Query("SELECT NEW com.codegym.model.dto.productDTO.ProductDTO (" +
-                "pro.id, " +
-                "pro.nameProduct, " +
-                "pro.price, " +
-                "pro.quantity, " +
-                "pro.description," +
-                "pro.category," +
-                "pro.productAvatar" +
+            "pro.id, " +
+            "pro.nameProduct, " +
+            "pro.price, " +
+            "pro.quantity, " +
+            "pro.description," +
+            "pro.category," +
+            "pro.productAvatar" +
             ") " +
             "FROM Product AS pro " +
             "WHERE pro.nameProduct like :keySearch "
     )
-    List<ProductDTO> findProductByNameProduct(@Param("keySearch")String keySearch);
+    List<ProductDTO> findProductByNameProduct(@Param("keySearch") String keySearch);
 
+
+//    Page<Product> findProductOrderByNameProductOrPriceOrQuantity(Pageable pageable);
+
+    default Page<Product> findAll(String keyword, Long categoryId, Pageable pageable) {
+        return findAll((root, criteriaQuery, criteriaBuilder) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null) {
+                Predicate predicateKw = criteriaBuilder.like(root.get("nameProduct"), '%' + keyword + '%');
+                predicates.add(predicateKw);
+            }
+
+            if (categoryId != null) {
+                Predicate predicate = criteriaBuilder.equal(root.get("category").get("id"), categoryId);
+                predicates.add(predicate);
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        }, pageable);
+
+    }
 }

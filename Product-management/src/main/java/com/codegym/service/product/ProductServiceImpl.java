@@ -27,16 +27,16 @@ import java.util.Optional;
 @Transactional
 public class ProductServiceImpl implements IProductService {
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    ProductAvatarServiceImpl productAvatarService;
+    private ProductAvatarServiceImpl productAvatarService;
 
     @Autowired
-    IUploadService iUploadService;
+    private IUploadService iUploadService;
 
     @Autowired
-    UploadUtil uploadUtil;
+    private UploadUtil uploadUtil;
 
     @Override
     public List<Product> findAll() {
@@ -48,10 +48,14 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAllProductDTOByDeletedIsFalse();
     }
 
+    @Override
+    public Page<ProductDTO> findAll(String keyword, Long categoryId, Pageable pageable) {
+        return productRepository.findAll(keyword, categoryId, pageable).map(Product::toProductDTO);
+    }
 
     @Override
     public Page<ProductDTO> findProductByNameProductOrDescriptionAndDeletedIsFalse(String keySearch, Pageable pageable) {
-       return productRepository.findProductByNameProductOrDescriptionAndDeletedIsFalse(keySearch,pageable);
+        return productRepository.findProductByNameProductOrDescriptionAndDeletedIsFalse(keySearch, pageable);
     }
 
     @Override
@@ -72,6 +76,14 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findProductByCategoryName(category, pageable);
     }
 
+//    @Override
+//    public Page<ProductDTO> findProductOrderByNameProductOrPriceOrQuantity(Pageable pageable) {
+//        Page<Product> products = productRepository.findProductOrderByNameProductOrPriceOrQuantity(pageable);
+//
+//        Page<ProductDTO> productDTOS = products.map(item -> item.toProductDTO());
+//        return productDTOS;
+//    }
+
 
     @Override
     public boolean existsByNameProduct(String nameProduct) {
@@ -80,7 +92,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Boolean existsByNameProductAndIdNot(String productName, Long id) {
-        return productRepository.existsByNameProductAndIdNot(productName,id);
+        return productRepository.existsByNameProductAndIdNot(productName, id);
     }
 
 

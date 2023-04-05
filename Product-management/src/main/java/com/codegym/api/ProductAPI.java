@@ -11,7 +11,6 @@ import com.codegym.model.dto.productDTO.ProductDTO;
 import com.codegym.model.dto.productDTO.ProductUpdateDTO;
 import com.codegym.service.category.ICategoryService;
 import com.codegym.service.product.IProductService;
-import com.codegym.service.product.ProductServiceImpl;
 import com.codegym.utils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,9 +43,8 @@ public class ProductAPI {
     AppUtils appUtils;
 
 
-
     @GetMapping("/total")
-    public ResponseEntity<List<ProductDTO>> getAllProduct(){
+    public ResponseEntity<List<ProductDTO>> getAllProduct() {
         List<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse();
 
         if (productDTOS.size() == 0) {
@@ -66,19 +64,25 @@ public class ProductAPI {
 //    }
 
 
+//    @GetMapping("/sort")
+//    public ResponseEntity<?> getAllProductBySort(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5)Pageable pageable){
+//        Page<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse(pageable);
+//        return new ResponseEntity<>(productDTOS, HttpStatus.OK);
+//    }
+
 
     @GetMapping("/category")
-    public ResponseEntity<List<CategoryDTO>> getAllCategory(){
+    public ResponseEntity<List<CategoryDTO>> getAllCategory() {
         List<CategoryDTO> categoryDTOS = categoryService.findAllCategoryDTO();
-        if(categoryDTOS.size() == 0){
+        if (categoryDTOS.size() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(categoryDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> getAllProductByFilter(@RequestParam Long categoryId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
-        if(categoryId == -1){
+    public ResponseEntity<?> getAllProductByFilter(@RequestParam Long categoryId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
+        if (categoryId == -1) {
             Page<ProductDTO> productDTOS = productService.findAllByDeletedIsFalse(pageable);
             if (productDTOS.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -86,18 +90,17 @@ public class ProductAPI {
             return new ResponseEntity<>(productDTOS, HttpStatus.OK);
         }
         Category category = categoryService.findById(categoryId).get();
-        Page<ProductDTO> productDTOS = productService.findProductByCategoryName(category , pageable);
-        if(productDTOS.isEmpty()){
+        Page<ProductDTO> productDTOS = productService.findProductByCategoryName(category, pageable);
+        if (productDTOS.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(productDTOS, HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<?> getAllProductBySearch(@RequestParam String keySearch, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable){
-        keySearch = "%" + keySearch + "%";
-        Page<ProductDTO> productDTOS = productService.findProductByNameProductOrDescriptionAndDeletedIsFalse(keySearch, pageable);
-        if(productDTOS.isEmpty()){
+    public ResponseEntity<?> getAllProductBySearch(@RequestParam String keySearch,@RequestParam Long categoryId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 5) Pageable pageable) {
+        Page<ProductDTO> productDTOS = productService.findAll(keySearch, categoryId, pageable);
+        if (productDTOS.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(productDTOS, HttpStatus.OK);
@@ -162,7 +165,6 @@ public class ProductAPI {
         }
 
 
-
         if (bindingResult.hasFieldErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
         }
@@ -179,7 +181,7 @@ public class ProductAPI {
                 .setCategory(category);
         product = productService.save(product);
 
-        if(file != null){
+        if (file != null) {
             product = productService.saveWithAvatar(product, file);
         }
         return new ResponseEntity<>(product.toProductDTO(), HttpStatus.OK);
